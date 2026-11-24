@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { User, Mail, Lock, Users, Calculator, PiggyBank } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { useToast } from '../components/common/Toast';
 import useAuth from '../hooks/useAuth';
 import Button from '../components/common/Button';
 import Input from '../components/common/Input';
@@ -54,6 +54,7 @@ function LargeKiteLogo({ size = 56 }) {
 export default function Register() {
   const { user, register } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const [formData, setFormData] = useState({
     name: '',

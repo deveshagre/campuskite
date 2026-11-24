@@ -42,7 +42,7 @@ export default function RecentActivity({ activities = [] }) {
       <div className="card-header">
         <h3 className="card-title">Recent Activity</h3>
         <Link
-          to="/expenses"
+          to="/groups"
           style={{
             fontFamily: 'var(--font-heading)',
             fontWeight: 700,

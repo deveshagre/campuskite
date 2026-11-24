@@ -4,12 +4,19 @@
  * Populates 4 demo users ("demo123"), 3 student groups, 18 expenses across 3 months, and settlements.
  */
 
-import { register, SESSION_KEY } from './authService.js';
+import { register, SESSION_KEY, logout, getCurrentUser } from './authService.js';
 import { createGroup, addMember } from './groupService.js';
 import { createExpense } from './expenseService.js';
 import { createSettlement, cancelSettlement } from './settlementService.js';
 import { clearAllStores } from './storageService.js';
-import { getByIndex } from './database.js';
+import { get, getByIndex, getAll, put, remove } from './database.js';
+
+export const DEMO_EMAILS = [
+  'alice@campus.edu',
+  'bob@campus.edu',
+  'charlie@campus.edu',
+  'diana@campus.edu',
+];
 
 export const DEMO_USERS = [
   { name: 'Alice Johnson', email: 'alice@campus.edu', password: 'demo123' },
@@ -25,8 +32,13 @@ export const DEMO_USERS = [
  */
 export async function isDemoDataLoaded() {
   try {
-    const existing = await getByIndex('users', 'email', 'alice@campus.edu');
-    return Array.isArray(existing) && existing.length > 0;
+    for (const email of DEMO_EMAILS) {
+      const existing = await getByIndex('users', 'email', email);
+      if (Array.isArray(existing) && existing.length > 0) {
+        return true;
+      }
+    }
+    return false;
   } catch {
     return false;
   }
@@ -45,7 +57,91 @@ export async function clearAllData() {
 }
 
 /**
- * Populates realistic demo dataset:
+ * Removes ONLY demo records from IndexedDB without affecting genuine user data.
+ * Deletes demo users, demo groups, associated group memberships, expenses, splits, and settlements.
+ *
+ * @returns {Promise<{ deletedUsersCount: number, deletedGroupsCount: number }>}
+ */
+export async function removeDemoData() {
+  // 1. Identify demo users
+  const allUsers = await getAll('users');
+  const demoUsers = allUsers.filter(
+    (u) => u.isDemo || DEMO_EMAILS.includes((u.email || '').toLowerCase())
+  );
+  const demoUserIds = new Set(demoUsers.map((u) => u.id));
+
+  // 2. Identify demo groups
+  const allGroups = await getAll('groups');
+  const demoGroups = allGroups.filter(
+    (g) => g.isDemo || demoUserIds.has(g.createdBy)
+  );
+  const demoGroupIds = new Set(demoGroups.map((g) => g.id));
+
+  // 3. Remove demo group members
+  const allMembers = await getAll('groupMembers');
+  for (const m of allMembers) {
+    if (m.isDemo || demoGroupIds.has(m.groupId) || demoUserIds.has(m.userId)) {
+      await remove('groupMembers', m.id).catch(() => {});
+    }
+  }
+
+  // 4. Remove demo expenses and splits
+  const allExpenses = await getAll('expenses');
+  const deletedExpenseIds = new Set();
+  for (const exp of allExpenses) {
+    if (exp.isDemo || demoGroupIds.has(exp.groupId) || demoUserIds.has(exp.paidBy)) {
+      deletedExpenseIds.add(exp.id);
+      await remove('expenses', exp.id).catch(() => {});
+      if (exp.receiptId) {
+        await remove('receipts', exp.receiptId).catch(() => {});
+      }
+    }
+  }
+
+  const allSplits = await getAll('expenseSplits');
+  for (const s of allSplits) {
+    if (s.isDemo || deletedExpenseIds.has(s.expenseId) || demoUserIds.has(s.userId)) {
+      await remove('expenseSplits', s.id).catch(() => {});
+    }
+  }
+
+  // 5. Remove demo settlements
+  const allSettlements = await getAll('settlements');
+  for (const st of allSettlements) {
+    if (
+      st.isDemo ||
+      demoGroupIds.has(st.groupId) ||
+      demoUserIds.has(st.payerId) ||
+      demoUserIds.has(st.receiverId)
+    ) {
+      await remove('settlements', st.id).catch(() => {});
+    }
+  }
+
+  // 6. Remove demo groups
+  for (const g of demoGroups) {
+    await remove('groups', g.id).catch(() => {});
+  }
+
+  // 7. Remove demo users
+  for (const u of demoUsers) {
+    await remove('users', u.id).catch(() => {});
+  }
+
+  // 8. If active session is a demo user, log out
+  const currentSession = await getCurrentUser().catch(() => null);
+  if (currentSession && demoUserIds.has(currentSession.id)) {
+    logout();
+  }
+
+  return {
+    deletedUsersCount: demoUsers.length,
+    deletedGroupsCount: demoGroups.length,
+  };
+}
+
+/**
+ * Populates realistic demo dataset without deleting existing user data:
  * - 4 users with PBKDF2 hashed passwords ("demo123")
  * - 3 student groups ("Apartment 4B", "Road Trip Squad", "Study Group")
  * - 18 expenses spanning September, October, and November 2026 with varied categories & split types
@@ -54,14 +150,29 @@ export async function clearAllData() {
  * @returns {Promise<{ users: Array<Object>, groups: Array<Object>, expensesCount: number, settlementsCount: number }>}
  */
 export async function loadDemoData() {
-  // Clear any existing data first to ensure clean state
-  await clearAllData();
+  // Prevent duplicate demo data
+  if (await isDemoDataLoaded()) {
+    throw new Error('Demo data is already loaded in the application.');
+  }
+
+  // Check if a real user is currently logged in before creating demo data
+  const existingLoggedInUser = await getCurrentUser().catch(() => null);
 
   // 1. Register 4 users
   const alice = await register('Alice Johnson', 'alice@campus.edu', 'demo123');
   const bob = await register('Bob Smith', 'bob@campus.edu', 'demo123');
   const charlie = await register('Charlie Brown', 'charlie@campus.edu', 'demo123');
   const diana = await register('Diana Ross', 'diana@campus.edu', 'demo123');
+
+  // Tag demo users (preserving passwordHash and salt)
+  const tagDemoUser = async (user) => {
+    const raw = await get('users', user.id);
+    if (raw) await put('users', { ...raw, isDemo: true });
+  };
+  await tagDemoUser(alice);
+  await tagDemoUser(bob);
+  await tagDemoUser(charlie);
+  await tagDemoUser(diana);
 
   // 2. Create 3 groups
   // Group 1: Apartment 4B (Alice, Bob, Charlie)
@@ -71,6 +182,7 @@ export async function loadDemoData() {
     '#FFDE59',
     alice.id
   );
+  await put('groups', { ...aptGroup, isDemo: true });
   await addMember(aptGroup.id, bob.email);
   await addMember(aptGroup.id, charlie.email);
 
@@ -81,6 +193,7 @@ export async function loadDemoData() {
     '#B8E0D2',
     alice.id
   );
+  await put('groups', { ...roadTripGroup, isDemo: true });
   await addMember(roadTripGroup.id, bob.email);
   await addMember(roadTripGroup.id, diana.email);
 
@@ -91,6 +204,7 @@ export async function loadDemoData() {
     '#FF8066',
     alice.id
   );
+  await put('groups', { ...studyGroup, isDemo: true });
   await addMember(studyGroup.id, bob.email);
   await addMember(studyGroup.id, charlie.email);
   await addMember(studyGroup.id, diana.email);
@@ -300,25 +414,32 @@ export async function loadDemoData() {
   ];
 
   for (const exp of expenseData) {
-    await createExpense(exp);
+    const createdExp = await createExpense(exp);
+    if (createdExp?.id) {
+      await put('expenses', { ...createdExp, isDemo: true });
+    }
   }
 
   // 4. Create Settlements (3 completed, 1 cancelled)
   // Settlement 1 (completed): Charlie pays Alice ₹400 in Apartment 4B
-  await createSettlement(aptGroup.id, charlie.id, alice.id, 40000, charlie.id);
+  const st1 = await createSettlement(aptGroup.id, charlie.id, alice.id, 40000, charlie.id);
+  await put('settlements', { ...st1, isDemo: true });
 
   // Settlement 2 (completed): Diana pays Alice ₹2,500 in Road Trip Squad
-  await createSettlement(roadTripGroup.id, diana.id, alice.id, 250000, diana.id);
+  const st2 = await createSettlement(roadTripGroup.id, diana.id, alice.id, 250000, diana.id);
+  await put('settlements', { ...st2, isDemo: true });
 
   // Settlement 3 (completed): Bob pays Charlie ₹500 in Study Group
-  await createSettlement(studyGroup.id, bob.id, charlie.id, 50000, bob.id);
+  const st3 = await createSettlement(studyGroup.id, bob.id, charlie.id, 50000, bob.id);
+  await put('settlements', { ...st3, isDemo: true });
 
   // Settlement 4 (cancelled): Bob pays Charlie ₹300 in Apartment 4B, then cancels
   const s4 = await createSettlement(aptGroup.id, bob.id, charlie.id, 30000, bob.id);
-  await cancelSettlement(s4.id, bob.id);
+  const cancelledS4 = await cancelSettlement(s4.id, bob.id);
+  await put('settlements', { ...cancelledS4, isDemo: true });
 
-  // Set default logged in session to Alice Johnson
-  if (typeof localStorage !== 'undefined') {
+  // Only switch active session to Alice if no genuine user was logged in
+  if (!existingLoggedInUser && typeof localStorage !== 'undefined') {
     localStorage.setItem(
       SESSION_KEY,
       JSON.stringify({ userId: alice.id, loginTime: new Date().toISOString() })

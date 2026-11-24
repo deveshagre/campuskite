@@ -47,8 +47,15 @@ export default function Settings() {
 
   // Section 3: Demo Data Confirmation Dialogs
   const [showLoadDemoDialog, setShowLoadDemoDialog] = useState(false);
+  const [showRemoveDemoDialog, setShowRemoveDemoDialog] = useState(false);
   const [showClearDataDialog, setShowClearDataDialog] = useState(false);
   const [loadingDemoAction, setLoadingDemoAction] = useState(false);
+  const [isDemoLoaded, setIsDemoLoaded] = useState(false);
+
+  // Check demo data status on mount
+  useEffect(() => {
+    demoDataService.isDemoDataLoaded().then(setIsDemoLoaded).catch(() => {});
+  }, []);
 
   // Section 4: Data Management State
   const [showImportDialog, setShowImportDialog] = useState(false);
@@ -139,11 +146,28 @@ export default function Settings() {
     setLoadingDemoAction(true);
     try {
       await demoDataService.loadDemoData();
+      setIsDemoLoaded(true);
       setShowLoadDemoDialog(false);
-      toast.success('Demo data loaded successfully! Please refresh the page to view changes.');
+      toast.success('Demo data loaded successfully!');
     } catch (err) {
       console.error('Failed to load demo data:', err);
       toast.error(err.message || 'Failed to load demo data');
+    } finally {
+      setLoadingDemoAction(false);
+    }
+  };
+
+  // 3. Demo Data: Remove Demo Data
+  const handleConfirmRemoveDemo = async () => {
+    setLoadingDemoAction(true);
+    try {
+      await demoDataService.removeDemoData();
+      setIsDemoLoaded(false);
+      setShowRemoveDemoDialog(false);
+      toast.success('Demo records removed. Your personal accounts and groups were preserved.');
+    } catch (err) {
+      console.error('Failed to remove demo data:', err);
+      toast.error(err.message || 'Failed to remove demo data');
     } finally {
       setLoadingDemoAction(false);
     }
@@ -154,6 +178,7 @@ export default function Settings() {
     setLoadingDemoAction(true);
     try {
       await demoDataService.clearAllData();
+      setIsDemoLoaded(false);
       if (logout) logout();
       setShowClearDataDialog(false);
       toast.info('All data has been permanently cleared.');
@@ -430,14 +455,19 @@ export default function Settings() {
 
       {/* SECTION 3: Demo Data */}
       <div className="card settings-section">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', marginBottom: 'var(--space-xs)' }}>
-          <Database size={22} color="var(--text)" />
-          <h3 className="settings-section-title" style={{ margin: 0 }}>
-            Demo Data
-          </h3>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', marginBottom: 'var(--space-xs)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
+            <Database size={22} color="var(--text)" />
+            <h3 className="settings-section-title" style={{ margin: 0 }}>
+              Demo Data
+            </h3>
+          </div>
+          {isDemoLoaded && (
+            <Badge variant="warning">Demo Dataset Active</Badge>
+          )}
         </div>
         <p className="settings-section-desc">
-          Load sample data to explore CampusKite's features
+          Load or remove sample dorm & flatmate data to explore CampusKite's calculations.
         </p>
 
         <div
@@ -447,6 +477,7 @@ export default function Settings() {
             gap: 'var(--space-md)',
           }}
         >
+          {/* Option A: Load Demo Data */}
           <div
             style={{
               display: 'flex',
@@ -465,17 +496,54 @@ export default function Settings() {
                 Populate Sample Campus Data
               </div>
               <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-secondary)' }}>
-                Creates 4 student roommates, 3 groups, and 18 expenses across 3 months.
+                {isDemoLoaded
+                  ? 'Sample data is currently present in your local database.'
+                  : 'Creates 4 student roommates, 3 groups, and 18 expenses across 3 months.'}
               </div>
             </div>
             <Button
               variant="mint"
+              disabled={isDemoLoaded}
               onClick={() => setShowLoadDemoDialog(true)}
+              title={isDemoLoaded ? 'Demo data is already loaded' : 'Load sample data'}
             >
-              Load Demo Data
+              {isDemoLoaded ? 'Demo Data Loaded' : 'Load Demo Data'}
             </Button>
           </div>
 
+          {/* Option B: Remove Demo Data Only */}
+          {isDemoLoaded && (
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: 'var(--space-md)',
+                border: '2px solid var(--border)',
+                borderRadius: 'var(--radius)',
+                backgroundColor: '#FFFDF0',
+                flexWrap: 'wrap',
+                gap: 'var(--space-sm)',
+              }}
+            >
+              <div>
+                <div style={{ fontWeight: 700, fontFamily: 'var(--font-heading)' }}>
+                  Remove Demo Records Only
+                </div>
+                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-secondary)' }}>
+                  Deletes sample users and groups without affecting your own personal accounts or groups.
+                </div>
+              </div>
+              <Button
+                variant="coral"
+                onClick={() => setShowRemoveDemoDialog(true)}
+              >
+                Remove Demo Records
+              </Button>
+            </div>
+          )}
+
+          {/* Option C: Factory Reset Clear All Data */}
           <div
             style={{
               display: 'flex',
@@ -494,7 +562,7 @@ export default function Settings() {
                 Reset & Clear Database
               </div>
               <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-secondary)' }}>
-                This will permanently delete all your data
+                Permanently wipes all local accounts, groups, and receipts from this browser.
               </div>
             </div>
             <Button
@@ -674,11 +742,25 @@ export default function Settings() {
         onClose={() => setShowLoadDemoDialog(false)}
         onConfirm={handleConfirmLoadDemo}
         title="Load Demo Data?"
-        message="This will overwrite current data and populate sample student groups (Apartment 4B, Road Trip, Study Group) and realistic expenses. Are you sure you want to proceed?"
+        message="This will populate sample student flatmate profiles (Alice, Bob, Charlie, Diana) and 3 groups with realistic expenses across 3 months. Your own personal user account will be preserved. Proceed?"
         confirmText="Load Demo Data"
         cancelText="Cancel"
         variant="mint"
         danger={false}
+        loading={loadingDemoAction}
+      />
+
+      {/* Remove Demo Data Confirmation */}
+      <ConfirmDialog
+        isOpen={showRemoveDemoDialog}
+        onClose={() => setShowRemoveDemoDialog(false)}
+        onConfirm={handleConfirmRemoveDemo}
+        title="Remove Demo Records?"
+        message="This will delete the 4 sample users and 3 sample groups. Your own personal accounts and groups will remain safe. Proceed?"
+        confirmText="Remove Demo Records"
+        cancelText="Cancel"
+        variant="danger"
+        danger={true}
         loading={loadingDemoAction}
       />
 

@@ -18,11 +18,14 @@ export default function EmptyState({
   title,
   description,
   actionLabel,
+  actionText,
   onAction,
   action,
   children,
   className = '',
 }) {
+  const btnLabel = actionLabel || actionText
+
   const renderIcon = () => {
     if (!Icon) return <Inbox size={32} aria-hidden="true" />
     if (React.isValidElement(Icon)) return Icon
@@ -38,10 +41,10 @@ export default function EmptyState({
       {description && <p className="empty-state-desc">{description}</p>}
       {action && <div style={{ marginTop: 'var(--space-sm)' }}>{action}</div>}
       {children}
-      {actionLabel && onAction && (
+      {btnLabel && onAction && (
         <div style={{ marginTop: 'var(--space-sm)' }}>
           <Button variant="primary" onClick={onAction}>
-            {actionLabel}
+            {btnLabel}
           </Button>
         </div>
       )}

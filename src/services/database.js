@@ -77,6 +77,10 @@ export async function getDB() {
           db.createObjectStore('receipts', { keyPath: 'id' });
         }
       },
+    }).catch((err) => {
+      dbPromise = null;
+      console.error('Failed to open IndexedDB database:', err);
+      throw err;
     });
   }
   return dbPromise;
@@ -104,6 +108,8 @@ export async function getById(storeName, id) {
   const db = await getDB();
   return db.get(storeName, id);
 }
+
+export const get = getById;
 
 /**
  * Retrieves all records matching a specific index value.

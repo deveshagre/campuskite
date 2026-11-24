@@ -1,6 +1,5 @@
 import React, { createContext, useReducer, useEffect, useCallback } from 'react'
 import * as authService from '../services/authService'
-import { isDemoDataLoaded, loadDemoData } from '../services/demoDataService'
 
 export const AuthContext = createContext(null)
 
@@ -55,18 +54,7 @@ export function AuthProvider({ children }) {
     async function restoreSession() {
       dispatch({ type: 'SET_LOADING', payload: true })
       try {
-        let currentUser = await authService.getCurrentUser()
-        if (!currentUser) {
-          const isLoaded = await isDemoDataLoaded()
-          if (!isLoaded) {
-            try {
-              await loadDemoData()
-              currentUser = await authService.getCurrentUser()
-            } catch {
-              // ignore demo load error
-            }
-          }
-        }
+        const currentUser = await authService.getCurrentUser()
         if (isMounted) {
           dispatch({ type: 'SET_USER', payload: currentUser || null })
         }

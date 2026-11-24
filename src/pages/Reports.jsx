@@ -42,17 +42,45 @@ export default function Reports() {
           const userGroups = await groupService.getUserGroups(userId)
           if (mounted) setGroups(userGroups || [])
 
-          const report = await reportService.getMonthlyReport(userId, selectedYear, selectedMonth)
+          const report = await reportService.getMonthlyReport(
+            userId,
+            selectedYear,
+            selectedMonth,
+            selectedGroup || undefined
+          )
           if (mounted) setMonthlyReport(report)
 
           const trend = await reportService.getSpendingTrend(userId)
           if (mounted) setSpendingTrend(trend || [])
 
-          // Load group expenses for the month
-          const targetGroupId = selectedGroup || (userGroups && userGroups[0]?.id)
-          if (targetGroupId) {
-            const expenses = await expenseService.getExpensesByMonth(targetGroupId, selectedYear, selectedMonth)
+          // Load expenses for the selected group or across all groups for the month
+          if (selectedGroup) {
+            const expenses = await expenseService.getExpensesByMonth(
+              selectedGroup,
+              selectedYear,
+              selectedMonth
+            )
             if (mounted) setMonthlyExpenses(expenses || [])
+          } else if (userGroups && userGroups.length > 0) {
+            const seenIds = new Set()
+            const allExp = []
+            for (const grp of userGroups) {
+              const grpExpenses = await expenseService.getExpensesByMonth(
+                grp.id,
+                selectedYear,
+                selectedMonth
+              )
+              if (Array.isArray(grpExpenses)) {
+                for (const exp of grpExpenses) {
+                  if (exp?.id && !seenIds.has(exp.id)) {
+                    seenIds.add(exp.id)
+                    allExp.push(exp)
+                  }
+                }
+              }
+            }
+            allExp.sort((a, b) => (b.date || '').localeCompare(a.date || ''))
+            if (mounted) setMonthlyExpenses(allExp)
           } else {
             if (mounted) setMonthlyExpenses([])
           }
