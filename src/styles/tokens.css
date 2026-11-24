@@ -1,0 +1,118 @@
+/**
+ * CampusKite Neobrutalist Design System - Design Tokens
+ * Group expense sharing platform for college students
+ */
+
+:root {
+  /* ==========================================================================
+     Color Palette
+     ========================================================================== */
+  --bg: #F5F0E8;              /* Warm off-white / canvas background */
+  --surface: #FFFFFF;         /* Pure white surface */
+  --primary: #FFDE59;         /* Vibrant brand yellow */
+  --mint: #B8E0D2;            /* Soft fresh mint green */
+  --coral: #FF8066;           /* Energetic coral / warning / debt */
+  --text: #171717;            /* Deep ink black */
+  --text-secondary: #77736B;  /* Muted neutral grey */
+  --border: #171717;          /* High-contrast solid border */
+  --success: #4D9868;         /* Positive / settled balance */
+  --danger: #D85D52;          /* Error / negative balance / delete */
+
+  /* Supplementary semantic tints (for tags, highlights, subtle backgrounds) */
+  --primary-hover: #F0CF45;
+  --mint-hover: #A3D4C4;
+  --coral-hover: #F26E53;
+  --surface-alt: #FBF8F3;
+  --surface-muted: #EFE9DE;
+  --border-light: rgba(23, 23, 23, 0.15);
+
+  /* ==========================================================================
+     Typography
+     ========================================================================== */
+  --font-heading: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, Menlo, monospace;
+
+  /* Font Sizes */
+  --font-size-xs: 0.75rem;     /* 12px */
+  --font-size-sm: 0.875rem;    /* 14px */
+  --font-size-base: 1rem;      /* 16px */
+  --font-size-lg: 1.125rem;    /* 18px */
+  --font-size-xl: 1.25rem;     /* 20px */
+  --font-size-2xl: 1.5rem;     /* 24px */
+  --font-size-3xl: 2rem;       /* 32px */
+  --font-size-4xl: 2.5rem;     /* 40px */
+  --font-size-5xl: 3rem;       /* 48px */
+
+  /* Line Heights */
+  --leading-none: 1;
+  --leading-tight: 1.2;
+  --leading-snug: 1.375;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+
+  /* Font Weights */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* ==========================================================================
+     Shadow System (Hard, unblurred neobrutalist shadows)
+     ========================================================================== */
+  --shadow-sm: 3px 3px 0px #171717;
+  --shadow: 5px 5px 0px #171717;
+  --shadow-lg: 7px 7px 0px #171717;
+  --shadow-hover: 3px 3px 0px #171717;
+  --shadow-active: 0px 0px 0px #171717;
+
+  /* Accent Shadows */
+  --shadow-primary: 5px 5px 0px var(--primary);
+  --shadow-mint: 5px 5px 0px var(--mint);
+  --shadow-coral: 5px 5px 0px var(--coral);
+
+  /* ==========================================================================
+     Border Radius (Strictly 0-8px, avoiding excessive rounding)
+     ========================================================================== */
+  --radius-none: 0px;
+  --radius-sm: 4px;
+  --radius: 6px;
+  --radius-lg: 8px;
+  --radius-full: 9999px;      /* Only for circular avatars and pill badges */
+
+  /* ==========================================================================
+     Border Widths & Presets
+     ========================================================================== */
+  --border-thin: 2px;
+  --border-thick: 3px;
+  --border-std: 2px solid var(--border);
+  --border-prominent: 3px solid var(--border);
+
+  /* ==========================================================================
+     Spacing Scale
+     ========================================================================== */
+  --space-xs: 4px;            /* 0.25rem */
+  --space-sm: 8px;            /* 0.5rem */
+  --space-md: 16px;           /* 1rem */
+  --space-lg: 24px;           /* 1.5rem */
+  --space-xl: 32px;           /* 2rem */
+  --space-2xl: 48px;          /* 3rem */
+  --space-3xl: 64px;          /* 4rem */
+
+  /* ==========================================================================
+     Transitions & Motion
+     ========================================================================== */
+  --transition-fast: 0.12s cubic-bezier(0.2, 0, 0, 1);
+  --transition-normal: 0.2s cubic-bezier(0.2, 0, 0, 1);
+
+  /* ==========================================================================
+     Z-Index Scale
+     ========================================================================== */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-toast: 1060;
+  --z-tooltip: 1070;
+}

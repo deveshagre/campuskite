@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Neobrutalist Hard Shadow -->
+  <polygon points="18,4 29,15 18,27 7,15" fill="#171717" />
+  
+  <!-- Stylized Kite Body -->
+  <polygon points="16,2 27,13 16,25 5,13" fill="#FFDE59" stroke="#171717" stroke-width="2" stroke-linejoin="round" />
+  
+  <!-- Internal Spar Grid Lines -->
+  <line x1="5" y1="13" x2="27" y2="13" stroke="#171717" stroke-width="1.75" />
+  <line x1="16" y1="2" x2="16" y2="25" stroke="#171717" stroke-width="1.75" />
+  
+  <!-- Tail String -->
+  <path d="M 16,25 Q 13,27 16,29 T 18,31" fill="none" stroke="#171717" stroke-width="1.5" stroke-linecap="round" />
+  
+  <!-- Tail Ribbons -->
+  <polygon points="12.5,27.5 15,26.5 14,29" fill="#FF8066" stroke="#171717" stroke-width="1" />
+  <polygon points="17.5,29.5 19.5,28.5 18.5,31" fill="#B8E0D2" stroke="#171717" stroke-width="1" />
+</svg>

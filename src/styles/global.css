@@ -1,0 +1,272 @@
+/**
+ * CampusKite Global Styles & Neobrutalist Reset
+ */
+
+@import './tokens.css';
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import './components.css';
+@import './responsive.css';
+
+/* ==========================================================================
+   CSS Reset & Box Model
+   ========================================================================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--leading-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* ==========================================================================
+   Neobrutalist Text Selection
+   ========================================================================== */
+::selection {
+  background-color: var(--primary);
+  color: var(--text);
+}
+
+::-moz-selection {
+  background-color: var(--primary);
+  color: var(--text);
+}
+
+/* ==========================================================================
+   Typography Hierarchy
+   ========================================================================== */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  font-weight: var(--font-weight-bold);
+  color: var(--text);
+  line-height: var(--leading-tight);
+  letter-spacing: -0.025em;
+  margin-bottom: var(--space-sm);
+}
+
+h1 {
+  font-size: var(--font-size-4xl);
+}
+
+h2 {
+  font-size: var(--font-size-3xl);
+}
+
+h3 {
+  font-size: var(--font-size-2xl);
+}
+
+h4 {
+  font-size: var(--font-size-xl);
+}
+
+h5 {
+  font-size: var(--font-size-lg);
+}
+
+h6 {
+  font-size: var(--font-size-base);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+p {
+  margin-bottom: var(--space-md);
+  color: var(--text);
+}
+
+p:last-child {
+  margin-bottom: 0;
+}
+
+small {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+strong,
+b {
+  font-weight: var(--font-weight-bold);
+}
+
+/* ==========================================================================
+   Links
+   ========================================================================== */
+a {
+  color: var(--text);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+a:hover {
+  background-color: var(--primary);
+  text-decoration-color: var(--border);
+}
+
+a:focus-visible {
+  outline: 3px solid var(--border);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   Lists & Blockquotes
+   ========================================================================== */
+ul,
+ol {
+  margin-bottom: var(--space-md);
+  padding-left: var(--space-xl);
+}
+
+li {
+  margin-bottom: var(--space-xs);
+}
+
+blockquote {
+  border-left: var(--border-thick) solid var(--border);
+  background-color: var(--surface);
+  padding: var(--space-md) var(--space-lg);
+  margin: var(--space-md) 0;
+  font-style: italic;
+  box-shadow: var(--shadow-sm);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+/* ==========================================================================
+   Code & Preformatted
+   ========================================================================== */
+code,
+kbd,
+samp {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background-color: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 2px 6px;
+  box-shadow: 1px 1px 0px var(--border);
+}
+
+pre {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  background-color: var(--surface);
+  border: var(--border-std);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-md);
+  overflow-x: auto;
+  margin-bottom: var(--space-md);
+}
+
+pre code {
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+/* ==========================================================================
+   Media Elements
+   ========================================================================== */
+img,
+svg,
+video,
+canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+hr {
+  border: none;
+  height: var(--border-thin);
+  background-color: var(--border);
+  margin: var(--space-xl) 0;
+}
+
+/* ==========================================================================
+   Neobrutalist Custom Scrollbar
+   ========================================================================== */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+  border-left: var(--border-thin) solid var(--border);
+  border-top: var(--border-thin) solid var(--border);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border: var(--border-thin) solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-hover);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary) var(--bg);
+}
+
+/* ==========================================================================
+   Global Focus States
+   ========================================================================== */
+:focus-visible {
+  outline: 3px solid var(--border);
+  outline-offset: 2px;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid var(--border);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   Accessibility & Screen Readers
+   ========================================================================== */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

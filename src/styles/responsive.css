@@ -1,0 +1,286 @@
+/**
+ * CampusKite Neobrutalist Responsive System
+ * Breakpoints:
+ * - Desktop: > 1024px
+ * - Tablet: 768px - 1024px
+ * - Mobile: < 768px
+ */
+
+/* ==========================================================================
+   Tablet Styles (768px <= viewport <= 1024px)
+   ========================================================================== */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .sidebar {
+    width: 220px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-md);
+  }
+
+  .page-container {
+    padding: var(--space-lg) var(--space-md);
+  }
+
+  .report-summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .modal {
+    max-width: 90vw;
+  }
+
+  .btn-lg {
+    padding: 14px 22px;
+    font-size: var(--font-size-base);
+  }
+}
+
+/* ==========================================================================
+   Mobile Styles (viewport < 768px)
+   ========================================================================== */
+@media (max-width: 767px) {
+  /* Layout Architecture */
+  .app-layout {
+    flex-direction: column;
+    padding-bottom: 74px; /* Space for sticky bottom mobile nav */
+  }
+
+  /* Navigation: Hide desktop sidebar, reveal mobile bottom nav */
+  .sidebar {
+    display: none !important;
+  }
+
+  .mobile-nav {
+    display: flex !important;
+  }
+
+  .topbar {
+    padding: 0 var(--space-md);
+    height: 56px;
+  }
+
+  .topbar-title {
+    font-size: var(--font-size-lg);
+  }
+
+  .page-container {
+    padding: var(--space-md);
+  }
+
+  /* Touch Target Enforcement: Minimum 44px tap targets */
+  .btn {
+    min-height: 44px;
+    min-width: 44px;
+    font-size: var(--font-size-sm);
+    padding: 10px 16px;
+  }
+
+  .btn-sm {
+    min-height: 38px;
+    padding: 8px 12px;
+  }
+
+  .btn-icon {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .mobile-nav-link {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .input,
+  textarea,
+  select,
+  .select {
+    min-height: 44px;
+    font-size: 16px; /* Prevents auto-zoom on iOS */
+    padding: 10px 12px;
+  }
+
+  /* Single-Column Collapse */
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+  }
+
+  .report-summary {
+    grid-template-columns: 1fr;
+  }
+
+  /* Page Header Mobile Adjustments */
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-lg);
+  }
+
+  .page-title {
+    font-size: var(--font-size-2xl);
+  }
+
+  .page-description {
+    font-size: var(--font-size-sm);
+  }
+
+  .page-actions {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .page-actions .btn {
+    width: 100%;
+  }
+
+  /* Full-width Form Controls */
+  .input-group {
+    width: 100%;
+  }
+
+  .auth-page {
+    padding: var(--space-md);
+    align-items: flex-start;
+    padding-top: var(--space-xl);
+  }
+
+  .auth-container {
+    flex-direction: column;
+    gap: var(--space-xl);
+  }
+
+  .auth-branding {
+    max-width: 100%;
+  }
+
+  .auth-form-side {
+    max-width: 100%;
+  }
+
+  .auth-card {
+    padding: var(--space-lg);
+    box-shadow: var(--shadow);
+    border-width: var(--border-thin);
+  }
+
+  .auth-title {
+    font-size: var(--font-size-xl);
+  }
+
+  /* Modals on Mobile: full screen / bottom drawer behavior */
+  .modal-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .modal {
+    max-width: 100%;
+    max-height: 92vh;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    border-bottom: none;
+    box-shadow: 0 -5px 0px var(--border);
+  }
+
+  .modal-header,
+  .modal-footer {
+    padding: var(--space-md);
+  }
+
+  .modal-body {
+    padding: var(--space-md);
+  }
+
+  .modal-footer {
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .modal-footer .btn {
+    width: 100%;
+  }
+
+  /* Confirm Dialog Mobile */
+  .confirm-dialog-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .confirm-dialog-actions .btn {
+    width: 100%;
+  }
+
+  /* Cards & Sections Mobile */
+  .card,
+  .settings-section,
+  .report-container {
+    padding: var(--space-md);
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* Expense Rows on Mobile */
+  .expense-row {
+    padding: var(--space-sm) var(--space-md);
+    gap: var(--space-sm);
+  }
+
+  .expense-icon {
+    width: 38px;
+    height: 38px;
+    font-size: 1rem;
+  }
+
+  .expense-title {
+    font-size: var(--font-size-sm);
+  }
+
+  .expense-amount {
+    font-size: var(--font-size-base);
+  }
+
+  /* Split Preview Breakdown */
+  .split-preview {
+    padding: var(--space-sm);
+  }
+
+  /* Toast Notification Positioning */
+  .toast-container {
+    left: var(--space-md);
+    right: var(--space-md);
+    bottom: 80px; /* Above mobile bottom nav */
+  }
+
+  .toast {
+    min-width: 0;
+    width: 100%;
+  }
+
+  /* Tables: Horizontal Scroll indicator */
+  .table-container {
+    box-shadow: var(--shadow-sm);
+    -webkit-overflow-scrolling: touch;
+  }
+
+  thead th,
+  tbody td {
+    padding: 10px 12px;
+    font-size: var(--font-size-xs);
+  }
+}
+
+/* ==========================================================================
+   Desktop Specific Enhancements (> 1024px)
+   ========================================================================== */
+@media (min-width: 1025px) {
+  .mobile-nav {
+    display: none !important;
+  }
+
+  .sidebar {
+    display: flex !important;
+  }
+}
